@@ -39,6 +39,7 @@ local LED = {
 	-- The default delay is one second.
 	blink = function(self, delay)
 		local delay = 1 or delay
+		delay = 1 * 10 ^ 6 -- convert to microseconds.
 		self.pin:write(true)
 		sleep(delay)
 		self.pin:write(false)
