@@ -70,13 +70,14 @@ local WeatherStation = {
 	__center_text = function(self, text)
 		local n = math.floor((self.__lcd.SCREENWIDTH - #text) / 2)
 		n = n > 0 and n or 0
-		return string.rep(n, ' ') .. text
+		local res = string.rep(' ', n) .. text
+		return res .. string.rep(' ', self.__lcd.SCREENWIDTH - #res)
 	end,
 
 	-- Writes the two given lines to the LCD screen.
 	__lcd_write = function(self, args)
-		self.__lcd:__writeline{ text = self:__center_text(args.line1), line = 1 }
-		self.__lcd:__writeline{ text = self:__center_text(args.line2), line = 2 }
+		self.__lcd:writeline{ text = self:__center_text(args.line1), line = 1 }
+		self.__lcd:writeline{ text = self:__center_text(args.line2), line = 2 }
 	end,
 
 	-- Triggers the apropriate LEDs depending on the parameters.
@@ -105,21 +106,23 @@ local WeatherStation = {
 		local frequency = args.frequency or 1
 
 		while os.time() <= stop_time do
-			local sht11 = SHT11:new(self.__sensor.data, self.__sensor.clk)
-			self.__leds.queryled:on()
-			local temp = sht11:temperature()
-			sht11 = SHT11:new(self.__sensor.data, self.__sensor.clk)
-			local humid = sht11:humidity(temp)
-			self.__leds.queryled:off()
+			pcall(function()
+				local sht11 = SHT11:new(self.__sensor.data, self.__sensor.clk)
+				self.__leds.queryled:on()
+				local temp = sht11:temperature()
+				sht11 = SHT11:new(self.__sensor.data, self.__sensor.clk)
+				local humid = sht11:humidity(temp)
+				self.__leds.queryled:off()
 
-			self:__trigger_leds(temp, humid)
+				self:__trigger_leds(temp, humid)
 
-			self:__lcd_write{
-				line1 = string.format("%.2f %s", temp, "(C)"),
-				line2 = string.format("%.2f %s", humid, "(RH%)"),
-			}
+				self:__lcd_write{
+					line1 = string.format("%.2f %s", temp, "(C)"),
+					line2 = string.format("%.2f %s", humid, "(RH%)"),
+				}
 
-			sleep(frequency * 10 ^ 6)
+				sleep(frequency * 10 ^ 6)
+			end)
 		end
 
 		self:clear()
@@ -132,7 +135,7 @@ local WeatherStation = {
 		sht11:cleanup()
 		self.__lcd:cleanup()
 		for i, led in pairs(self.__leds) do
-			led:clenup()
+			led:cleanup()
 		end
 	end,
 

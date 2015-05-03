@@ -128,12 +128,13 @@ local LCD = {
 
 	-- Clears all the previously set up pins for the LCD.
 	cleanup = function(self)
+		self:clear()
 		self.datapin1:close()
 		self.datapin2:close()
 		self.datapin3:close()
 		self.datapin4:close()
 		self.enablepin:close()
-		self.regselfpin:close()
+		self.regselpin:close()
 	end,
 
 	-- Writes the given text to the given line of the LCD.
