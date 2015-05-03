@@ -2,7 +2,7 @@
 // Licensed under the GPLv2. See LICENSE for details.
 //
 // Please build this with the command:
-// $ gcc -Wall -shared -o utils.so utils.c
+// $ gcc -Wall -fPIC -shared -o utils.so utils.c
 // in the directory of the project.
 
 #include<unistd.h>

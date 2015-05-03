@@ -18,10 +18,11 @@ local gpio = require('periphery').GPIO
 	> lcd:writeline{text = "First line ahoy!", line = 1}
 	> lcd:writeline{text = "Second line ahoy!", line = 2}
 	> lcd:clear()
+	> lcd:cleanup()
 ]]--
 local LCD = {
 	-- screenwidth in characters.
-	__screenwidth = 16,
+	SCREENWIDTH = 16,
 
 	-- line selector constants.
 	__line1 = 0x80,
@@ -121,8 +122,18 @@ local LCD = {
 
 	-- Clears the LCD.
 	clear = function(self)
-		self:writeline{ text = string.rep(" ", self.__screenwidth), line = 1 }
-		self:writeline{ text = string.rep(" ", self.__screenwidth), line = 2 }
+		self:writeline{ text = string.rep(" ", self.SCREENWIDTH), line = 1 }
+		self:writeline{ text = string.rep(" ", self.SCREENWIDTH), line = 2 }
+	end,
+
+	-- Clears all the previously set up pins for the LCD.
+	cleanup = function(self)
+		self.datapin1:close()
+		self.datapin2:close()
+		self.datapin3:close()
+		self.datapin4:close()
+		self.enablepin:close()
+		self.regselfpin:close()
 	end,
 
 	-- Writes the given text to the given line of the LCD.

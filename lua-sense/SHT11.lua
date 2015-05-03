@@ -23,6 +23,8 @@ local gpio = require('periphery').GPIO
 	>
 	> humid = sht11:humidity()
 	> print("The humidity is: " .. humid)
+	>
+	> sht11:cleanup()
 --]]
 local SHT11 = {
 	-- humidity computation constants:
@@ -185,6 +187,12 @@ local SHT11 = {
 			self:__tick(true)
 			self:__tick(false)
 		end
+	end,
+
+	-- Cleans up all the pins used by the sensor.
+	cleanup = function(self)
+		gpio(self.datapin, 'out'):close()
+		self.clockpin:close()
 	end,
 
 	-- The main method which issues the necessary command for reading the

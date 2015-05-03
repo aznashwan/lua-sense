@@ -14,6 +14,7 @@ local sleep = require('utils').sleep
 	> led:on()
 	> led:off()
 	> led:blink()
+	> led:cleanup()
 ]]--
 local LED = {
 	-- Creates a new table with the given pin number.
@@ -45,6 +46,11 @@ local LED = {
 		self.pin:write(false)
 		sleep(delay)
 	end,
+
+	-- Cleans up the gpio pin setup for the LED.
+	cleanup = function(self)
+		self.pin:close()
+	end
 }
 
 return LED
